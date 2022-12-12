@@ -36,7 +36,6 @@ void Process::printProcess()const{
     std::cout << "PID: " << this->getPID() << std::endl;
     std::cout << "PC: " << this->getPC() << std::endl;
     std::cout << "Priority: " << this->getPriority() << std::endl;
-    std::cout << 
     std::cout << std::endl;
 }
 

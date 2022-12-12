@@ -56,8 +56,10 @@ Process SimulatedOS::NewProcess(int m_priority){
 void SimulatedOS::Exit(){
     if(!queue_.empty()){
         delete queue_.front(); //deletes pointer of the front of cpu
+        queue_.pop_front(); // or just this by itself?
+    }else{
+        throw std::invalid_argument("Nothing is using the CPU");
     }
-    throw std::invalid_argument("Nothing is using the CPU");
     
     
 }
@@ -120,26 +122,28 @@ void SimulatedOS::printOS()const{
 }
 
 bool SimulatedOS::addProcess(Process *new_process){
+    //if queue is empty just add
     if(queue_.size() == 0){
         queue_.push_front(new_process);
     }
-    else if(new_process->getPriority() > queue_.back()->getPriority()){
-        queue_.push_back(new_process);
+    else if(new_process->getPriority() >= queue_.front()->getPriority()){
+        queue_.push_front(new_process); //if >= push to front
     }
-        else if(new_process->getPriority() > queue_.front()->getPriority() && new_process->getPriority() <= queue_.back()->getPriority()) {
-        while(new_process->getPriority() > queue_.front()->getPriority()){
-            temp_stack_.push(queue_.front()); 
-            queue_.pop_front();
 
-        }
-                
-                queue_.push_front(new_process);
-        }
-    else if(new_process->getPriority() <= queue_.front()->getPriority()) {
+    else if(new_process->getPriority() < queue_.front()->getPriority() && new_process->getPriority() > queue_.back()->getPriority()) { //while less than front and more than back
+    while(new_process->getPriority() < queue_.front()->getPriority()){
+        temp_stack_.push(queue_.front()); 
+        queue_.pop_front();
+            // all in queue will go into stack (LIFO)
+        }      
             queue_.push_front(new_process);
-    }
+        }
+    
         
-    while (!temp_stack_.empty()) {
+    else if(new_process->getPriority() <= queue_.back()->getPriority()) {
+            queue_.push_back(new_process); //if => back, go ahead and push to back
+    }  
+    while (!temp_stack_.empty()) { //at the end, empty stack, since its LIFO, it goes back in order.
                 Process* tempPost = temp_stack_.top();
                 temp_stack_.pop();
                 queue_.push_front(tempPost);
@@ -149,9 +153,14 @@ bool SimulatedOS::addProcess(Process *new_process){
 
 }
 void SimulatedOS::printQueue()const{
+
+    std::cout << "CPU-> <-";
    for(long unsigned int i =0; i < getQueue().size(); i++){
-    getQueue()[i]->printProcess(); 
+   
+    std::cout << getQueue()[i]->getPID() << "|";
+    
    }
+    std::cout << std::endl;
 }
 
 

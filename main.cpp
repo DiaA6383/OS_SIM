@@ -12,33 +12,47 @@ int main()
 	SimulatedOS osSim{3, 96, 32};
 	osSim.printOS();
 
+/*
 
-	Process test_process = osSim.NewProcess(4);
-	test_process.printProcess();
-
-	Process test_process2 = osSim.NewProcess(1);
-	test_process2.printProcess();
-
-	Process test_process3 = osSim.NewProcess(6);
-	test_process3.printProcess();
-
-	Process test_process4 = osSim.NewProcess(1);
-	test_process4.printProcess();
-
-	Process test_process5 = osSim.NewProcess(8);
-	test_process5.printProcess();
-
-	Process test_process6 = osSim.NewProcess(3);
-	test_process6.printProcess();
-
-	std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~ QUEUE -v"<< std::endl;
+		Process test_process1 = osSim.NewProcess(4);
 
 
-	osSim.printQueue();
+		Process test_process2 = osSim.NewProcess(1);
+		
 
-	
+		Process test_process3 = osSim.NewProcess(6);
+		
 
-	osSim.PrintCPU();
+		Process test_process4 = osSim.NewProcess(1);
+		
+
+		Process test_process5 = osSim.NewProcess(8);
+
+
+		Process test_process6 = osSim.NewProcess(3);
+		*/
+
+		osSim.NewProcess(4);
+		osSim.NewProcess(1);
+		osSim.NewProcess(6);
+		osSim.NewProcess(3);
+		osSim.NewProcess(2);
+		osSim.NewProcess(8);
+		osSim.NewProcess(1);
+		osSim.NewProcess(8);
+		osSim.NewProcess(10);
+		osSim.NewProcess(10);
+		osSim.NewProcess(9);
+
+
+
+		osSim.printQueue();
+
+		osSim.Exit();
+		
+		osSim.printQueue();
+
+
 
 
 

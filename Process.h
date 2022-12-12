@@ -18,13 +18,6 @@ class Process{
     void printProcess()const;
     void incrementProcess();
 
-    //bool operator>(const Process& rhs);
-    //bool operator<(const Process& rhs);
-    struct ComparePriority{
-    bool operator()(const Process& lhs, const Process& rhs){
-        return lhs.getPriority() > rhs.getPriority();
-    }
-};
 
 
   
