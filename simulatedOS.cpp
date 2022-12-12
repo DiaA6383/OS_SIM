@@ -2,17 +2,7 @@
 #include "simulatedOS.h"
 #include "Process.h"
 
-/**
- * @brief Construct a new simulation O S::simulation O S object
- The parameters specify number of hard disks in the simulated computer, amount of memory and page size.
- Disks and pages enumeration starts from 0. The amountOfRAM should always be divisible by pageSize. Feel 
- free to through any exception if it is not so. When testing, I promise to use only correct and greater 
- than zero constructor parameters.
- * 
- * @param m_numberOfDisks 
- * @param m_amountOfRAM 
- * @param m_pageSize 
- */
+
 SimulatedOS::SimulatedOS(int m_numberOfDisks, int m_amountOfRAM, int m_pageSize){
     setNumberOfDisks(m_numberOfDisks);
     setPageSize(m_pageSize);
@@ -27,19 +17,6 @@ SimulatedOS::SimulatedOS(int m_numberOfDisks, int m_amountOfRAM, int m_pageSize)
    
 }
 
-/**
- * @brief Creates a new process with the specified priority in the simulated system. The new process takes 
- place in the ready-queue or immediately starts using the CPU. Every process in the simulated system has a PID. 
- Your simulation assigns PIDs to new processes starting from 1 and increments it by one for each new process. 
- Do not reuse PIDs of the terminated processes. Every process has a program counter. PC starts from 0 for a new 
- process. This PC of ours doesn’t behave like a real PC and updates only when we issue a corresponding instruction.
- Page 0 that has the starting address of 0 should be loaded in RAM when a new process appears. It is considered 
- “freshly used”. No process can run until page with the current PC address is loaded in the memory.
-
- * 
- * @param m_priority 
- * @returns new process
- */
 Process SimulatedOS::NewProcess(int m_priority){
     incrementPID();
     int new_pid = this->PID_Counter_;
@@ -48,11 +25,6 @@ Process SimulatedOS::NewProcess(int m_priority){
     return *new_process;
 }
 
-/**
- * @brief Currently running process wants to terminate. 
- * Immediately remove the process from the system and free all the memory it was using.
- * 
- */
 void SimulatedOS::Exit(){
     if(!queue_.empty()){
         delete queue_.front(); //deletes pointer of the front of cpu
@@ -60,13 +32,12 @@ void SimulatedOS::Exit(){
     }else{
         throw std::invalid_argument("Nothing is using the CPU");
     }
-    
-    
 }
 void SimulatedOS::PrintCPU()const{
     std::cout << "CPU: " << queue_.front()->getPID() <<std::endl;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 //setters and getters for encapsulation purposes
 int SimulatedOS::getNumberOfDisks()const{
     return numberOfDisks_;
@@ -122,44 +93,42 @@ void SimulatedOS::printOS()const{
 }
 
 bool SimulatedOS::addProcess(Process *new_process){
-    //if queue is empty just add
+    //1. if queue is empty
     if(queue_.size() == 0){
         queue_.push_front(new_process);
     }
+    //2. if new process is higher priority than front of queue
     else if(new_process->getPriority() >= queue_.front()->getPriority()){
         queue_.push_front(new_process); //if >= push to front
     }
-
-    else if(new_process->getPriority() < queue_.front()->getPriority() && new_process->getPriority() > queue_.back()->getPriority()) { //while less than front and more than back
-    while(new_process->getPriority() < queue_.front()->getPriority()){
-        temp_stack_.push(queue_.front()); 
-        queue_.pop_front();
-            // all in queue will go into stack (LIFO)
-        }      
-            queue_.push_front(new_process);
-        }
-    
-        
+    //3. if new process is less(or equal) priority than back of queue
     else if(new_process->getPriority() <= queue_.back()->getPriority()) {
-            queue_.push_back(new_process); //if => back, go ahead and push to back
+        queue_.push_back(new_process); 
     }  
+    //4 if new process is of lower priority than front BUT lower priority than back of queue
+    else if(new_process->getPriority() < queue_.front()->getPriority() 
+         && new_process->getPriority() > queue_.back()->getPriority()) { 
+      while(new_process->getPriority() < queue_.front()->getPriority()){
+                temp_stack_.push(queue_.front()); 
+                queue_.pop_front(); // all in queue will go into stack (LIFO)
+            }      
+                queue_.push_front(new_process);
+            }
+    //make sure stack is empty in the end
     while (!temp_stack_.empty()) { //at the end, empty stack, since its LIFO, it goes back in order.
                 Process* tempPost = temp_stack_.top();
                 temp_stack_.pop();
                 queue_.push_front(tempPost);
             }
-    
     return true;
-
 }
 void SimulatedOS::printQueue()const{
-
     std::cout << "CPU-> <-";
-   for(long unsigned int i =0; i < getQueue().size(); i++){
-   
+
+    for(long unsigned int i =0; i < getQueue().size(); i++){
     std::cout << getQueue()[i]->getPID() << "|";
+    }
     
-   }
     std::cout << std::endl;
 }
 
