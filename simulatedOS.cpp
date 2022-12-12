@@ -13,8 +13,6 @@ SimulatedOS::SimulatedOS(int m_numberOfDisks, int m_amountOfRAM, int m_pageSize)
     }
     setAmountOfRAM(m_amountOfRAM);
     PID_Counter_ = 0; //initialize PID after each OS instance
-    
-   
 }
 
 Process SimulatedOS::NewProcess(int m_priority){
@@ -33,10 +31,39 @@ void SimulatedOS::Exit(){
         throw std::invalid_argument("Nothing is using the CPU");
     }
 }
+
+void SimulatedOS::DiskReadRequested(int diskNumber, std::string fileName){
+    if(diskNumber > 0 && diskNumber <= this->getNumberOfDisks()){
+        setFileName(fileName);
+        diskQueue_.push_back(queue_.front());
+        queue_.pop_front();
+    }
+}
+
+void SimulatedOS::FetchFrom(unsigned int memoryAddress){
+    while(memoryAddress < (unsigned int) getAmountOfRAM()){
+        queue_.front()->setPC(memoryAddress);
+    }
+}
+
 void SimulatedOS::PrintCPU()const{
     std::cout << "CPU: " << queue_.front()->getPID() <<std::endl;
 }
 
+void SimulatedOS::PrintReadyQueue()const{
+    std::cout << "Ready Queue: ";
+    for(long unsigned int i = 0; i < readyQueue_.size(); i++){
+        std::cout << readyQueue_[i]->getPID() << " "; 
+    }
+    std::cout << std::endl;
+}
+
+void SimulatedOS::PrintRAM()const{
+    std::cout << "Frame     Page     PID " << std::endl;
+    for(int i = queue_.size(); i > 0; i++){
+    std::cout << i << "/T" << "";
+    }
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //setters and getters for encapsulation purposes
 int SimulatedOS::getNumberOfDisks()const{
@@ -58,6 +85,9 @@ std::deque<Process*> SimulatedOS::getQueue()const{
     return queue_;
 }
 
+void SimulatedOS::setFileName(std::string m_FileName){
+    FileName_ = m_FileName;
+}
 void SimulatedOS::setNumberOfDisks(int m_numberOfDisks){
     numberOfDisks_ = m_numberOfDisks;
 }
@@ -89,10 +119,13 @@ void SimulatedOS::printOS()const{
     std::cout << std::endl;
     std::cout << "Current Page: " << getCurrentPage() << std::endl;
     std::cout << "Current Disk: " << getCurrentDisk() <<std::endl;
-     std::cout << "~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
+    std::cout << "~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
 }
 
 bool SimulatedOS::addProcess(Process *new_process){
+    RAM_.push_back(0);
+    readyQueue_.push_back(new_process);
+
     //1. if queue is empty
     if(queue_.size() == 0){
         queue_.push_front(new_process);
@@ -114,22 +147,24 @@ bool SimulatedOS::addProcess(Process *new_process){
             }      
                 queue_.push_front(new_process);
             }
-    //make sure stack is empty in the end
-    while (!temp_stack_.empty()) { //at the end, empty stack, since its LIFO, it goes back in order.
+    //5. make sure stack is empty in the end, should be in order 
+    while (!temp_stack_.empty()) { 
                 Process* tempPost = temp_stack_.top();
                 temp_stack_.pop();
                 queue_.push_front(tempPost);
             }
     return true;
 }
+
 void SimulatedOS::printQueue()const{
     std::cout << "CPU-> <-";
 
     for(long unsigned int i =0; i < getQueue().size(); i++){
     std::cout << getQueue()[i]->getPID() << "|";
     }
-    
+
     std::cout << std::endl;
 }
+
 
 

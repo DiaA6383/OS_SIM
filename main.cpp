@@ -46,11 +46,12 @@ int main()
 
 
 
-		osSim.printQueue();
+	
+		osSim.PrintReadyQueue();
 
 		osSim.Exit();
+
 		
-		osSim.printQueue();
 
 
 
