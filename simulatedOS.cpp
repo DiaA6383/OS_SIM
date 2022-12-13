@@ -13,12 +13,17 @@ SimulatedOS::SimulatedOS(int m_numberOfDisks, int m_amountOfRAM, int m_pageSize)
     }
     setAmountOfRAM(m_amountOfRAM);
     PID_Counter_ = 0; //initialize PID after each OS instance
+    for(int i = 0; i < m_numberOfDisks; i++){
+        std::deque<Process*> *new_deque = new std::deque<Process*>;
+        diskQueue_vector_.push_back(*new_deque);
+    }
 }
 
 Process SimulatedOS::NewProcess(int m_priority){
     incrementPID();
     int new_pid = this->PID_Counter_;
     Process *new_process = new Process(m_priority, new_pid);
+    RAM_.push_back(0);
     addProcess(new_process);
     return *new_process;
 }
@@ -32,14 +37,7 @@ void SimulatedOS::Exit(){
     }
 }
 
-void SimulatedOS::DiskReadRequested(int diskNumber, std::string fileName){
-    if(diskNumber >= 0 && diskNumber <= this->getNumberOfDisks()){
-        queue_.front()->setFileName(fileName);
-        queue_.front()->setDiskNumber(diskNumber);
-        diskQueue_.push(queue_.front());
-        queue_.pop_front();
-    }
-}
+
 
 void SimulatedOS::FetchFrom(unsigned int memoryAddress){
     while(memoryAddress < (unsigned int) getAmountOfRAM()){
@@ -54,7 +52,7 @@ void SimulatedOS::PrintCPU()const{
 
 void SimulatedOS::PrintReadyQueue()const{
     std::cout << "Ready Queue: ";
-    for(long unsigned int i = 1; i < readyQueue_.size(); i++){
+    for(long unsigned int i = 1; i < queue_.size(); i++){
         //std::cout << readyQueue_[i]->getPID() << " "; 
         std::cout << queue_[i]->getPID() << " ";
     }
@@ -68,15 +66,56 @@ void SimulatedOS::PrintRAM()const{
     std::cout << i << "/T" << "";
     }
 }
+void SimulatedOS::DiskReadRequested(int diskNumber, std::string fileName){
+    if(diskNumber >= 0 && diskNumber <= this->getNumberOfDisks()){
+        queue_.front()->setDiskNumber(diskNumber);
+        queue_.front()->setFileName(fileName);
+        //diskQueue_.push_back(queue_.front());
+        diskQueue_vector_[diskNumber].push_back(queue_.front());//! doesnt exist 
+        queue_.pop_front();
+    }
+}
 void SimulatedOS::DiskJobCompleted(int diskNumber){
-    if(diskNumber < 0 || diskNumber > this->getNumberOfDisks()){
-        throw std::invalid_argument("Disk Number does not exist.");
+    if(diskNumber < 0 || diskNumber > this->getNumberOfDisks()-1){
+        //throw std::invalid_argument("Disk Number does not exist.");
+        std::cout << "Disk Number does not exist." <<std::endl;
     }else{
-        //bool isCompleted = true;
-        //diskQueue_.front()-> setFileName("");
-        //diskQueue_.front()-> setDiskNumber(0);
-        queue_.push_front(diskQueue_.front());
-        diskQueue_.pop();
+        for(long unsigned int i = 0; i < diskQueue_vector_[diskNumber].size(); i++){
+            if(diskQueue_vector_[diskNumber][i]->completeStatus() != true){
+                diskQueue_vector_[diskNumber][i]->setCompleteStatus();
+                addProcess(diskQueue_vector_[diskNumber][i]);
+                break;
+            }
+        }
+        //addProcess(diskQueue_.front())
+        //diskQueue_.pop_front();
+    }
+}
+void SimulatedOS::PrintDisk(int diskNumber)const{
+    for(long unsigned int i = 0; i < diskQueue_vector_[diskNumber].size(); i++){
+        if(diskQueue_vector_[diskNumber][i]->completeStatus() == false){
+            std::cout << "Disk: " << diskNumber << " PID: " << diskQueue_vector_[diskNumber][i]->getPID() << " " << diskQueue_vector_[diskNumber][i]->getFileName()<<std::endl;
+            break;
+        }else{
+            //throw std::invalid_argument("Disk number does not exist.");
+            std::cout << "Disk " << diskNumber << " Idle" <<std::endl;
+        }
+    }
+}
+
+void SimulatedOS::PrintDiskQueue(int diskNumber)const{
+    if(diskNumber < 0 || diskNumber > this->getNumberOfDisks()){
+        std::cout << "Instruction Ignored: no disk with such number exists" << std::endl;
+    }
+    else if(this->diskQueue_vector_[diskNumber].size() == 0||queue_isEmpty(diskNumber)==true){
+        std::cout << "Disk " << diskNumber << " I/O queue: Empty" <<std::endl;
+
+    }else{
+        for(unsigned long int i = 0; i < this->diskQueue_vector_[diskNumber].size(); i++){
+            if(this->diskQueue_vector_[diskNumber][i]->completeStatus() == false){
+                std::cout << this->diskQueue_vector_[diskNumber][i]->getPID() << " ";
+            }
+        }
     }
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -135,10 +174,8 @@ void SimulatedOS::printOS()const{
     std::cout << "~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
 }
 
-bool SimulatedOS::addProcess(Process *new_process){
-    RAM_.push_back(0);
-    readyQueue_.push_back(new_process);
-
+bool SimulatedOS::addProcess(Process *new_process){ //if higher go 
+    
     //1. if queue is empty
     if(queue_.size() == 0){
         queue_.push_front(new_process);
@@ -170,13 +207,24 @@ bool SimulatedOS::addProcess(Process *new_process){
 }
 
 void SimulatedOS::printQueue()const{
-    std::cout << "CPU-> <-";
+    std::cout << std::endl;
+    
 
     for(long unsigned int i =0; i < getQueue().size(); i++){
-    std::cout << getQueue()[i]->getPID() << "|";
+    getQueue()[i]->printProcess();
+    std::cout << std::endl;
     }
 
     std::cout << std::endl;
+}
+bool SimulatedOS::queue_isEmpty(int diskNumber)const{
+    for(long unsigned int i = 0; i < this->diskQueue_vector_[diskNumber].size(); i++){
+        if(this->diskQueue_vector_[diskNumber][i]->completeStatus() == false){
+            return false;
+            break;
+        }
+    }
+    return true;
 }
 
 

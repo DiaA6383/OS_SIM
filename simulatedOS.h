@@ -20,6 +20,7 @@ class SimulatedOS{
     void PrintRAM()const;
     void PrintDisk(int diskNumber)const;
     void DiskJobCompleted(int diskNumber);
+    void PrintDiskQueue(int diskNumber)const;
     //void PrintDiskQueue(int diskQueue)const;
    
      //getters
@@ -44,6 +45,7 @@ class SimulatedOS{
     void printOS()const;
     bool addProcess(Process *new_process);
     void printQueue()const;
+    bool queue_isEmpty(int diskNumber)const;
 
 
     private:
@@ -57,8 +59,8 @@ class SimulatedOS{
     std::stack<Process*> temp_stack_;
 
     std::vector<int> RAM_;
-    std::vector<Process*> readyQueue_;
-    std::queue<Process*> diskQueue_;
+    std::deque<Process*> diskQueue_;
+    std::vector<std::deque<Process*>> diskQueue_vector_;
     
    
 };

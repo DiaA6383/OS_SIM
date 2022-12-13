@@ -26,12 +26,11 @@ int main()
 	osSim.DiskReadRequested(0, "HW.txt");
 
 	osSim.PrintCPU();
-
 	// CPU: 1
 
-	//osSim.PrintDisk(0);
+	osSim.PrintDisk(0);
 	// Disk 0: PID 3, "HW.txt"
-/*
+
 	osSim.PrintDiskQueue(0);
 	// Disk 0 I/O-queue: Empty
 
@@ -44,7 +43,7 @@ int main()
 
 	osSim.PrintDisk(0);
 	// Disk 0: Idle
-
+/*
 	osSim.FetchFrom(48);
 	osSim.PrintRAM();
 	// Frame	Page	PID

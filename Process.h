@@ -15,11 +15,14 @@ class Process{
     void setPage(int m_page);
     void setFileName(std::string m_FileName);
     void setDiskNumber(int m_disk_number_);
+    void setCompleteStatus();
     
     int getPID()const;
     int getPC()const;
+    bool completeStatus()const;
     int getPriority()const;
     int getPage()const;
+    bool queue_isEmpty(int diskNumber)const;
     std::string getFileName()const;   
     int getDiskNumber()const;
     void printProcess()const;
@@ -34,6 +37,7 @@ class Process{
     int page_;
     std::string fileName_;
     int disk_number_;
+    bool isCompleted = false;
 };
 
 #endif

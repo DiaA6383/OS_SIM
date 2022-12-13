@@ -5,6 +5,7 @@ Process::Process(int m_priority, int m_PID){
     setPriority(m_priority);
     setPID(m_PID);
     setPage(0);
+    setDiskNumber(-1);
     
 }
 /**
@@ -32,7 +33,9 @@ void Process::setFileName(std::string m_FileName){
 void Process::setDiskNumber(int m_disk_number){
     this->disk_number_ = m_disk_number;
 }
-
+void Process::setCompleteStatus(){
+    this->isCompleted = true;
+}
 
 int Process::getPC()const{
     return PC_;
@@ -49,6 +52,9 @@ int Process::getPage()const{
 std::string Process::getFileName()const{
     return fileName_;
 }
+bool Process::completeStatus()const{
+    return isCompleted;
+}
 int::Process::getDiskNumber()const{
     return disk_number_;
 }
@@ -57,5 +63,7 @@ void Process::printProcess()const{
     std::cout << "PID: " << this->getPID() << std::endl;
     std::cout << "PC: " << this->getPC() << std::endl;
     std::cout << "Priority: " << this->getPriority() << std::endl;
+    std::cout << "Disk Number: " << this->getDiskNumber() << std::endl;
+    std::cout << "Filename: " << this->getFileName() <<std::endl;
     std::cout << std::endl;
 }
