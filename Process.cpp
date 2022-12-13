@@ -5,6 +5,7 @@ Process::Process(int m_priority, int m_PID){
     setPriority(m_priority);
     setPID(m_PID);
     setPage(0);
+    
 }
 /**
  * @brief Destroy the Process:: Process object
@@ -25,6 +26,14 @@ void Process::setPage(int m_page){
     this->page_ = m_page;
 }
 
+void Process::setFileName(std::string m_FileName){
+    this->fileName_ = m_FileName;
+}
+void Process::setDiskNumber(int m_disk_number){
+    this->disk_number_ = m_disk_number;
+}
+
+
 int Process::getPC()const{
     return PC_;
 }
@@ -36,6 +45,12 @@ int Process::getPriority()const{
 }
 int Process::getPage()const{
     return page_;
+}
+std::string Process::getFileName()const{
+    return fileName_;
+}
+int::Process::getDiskNumber()const{
+    return disk_number_;
 }
 
 void Process::printProcess()const{

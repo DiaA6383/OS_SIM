@@ -9,56 +9,7 @@
 
 int main()
 {
-	SimulatedOS osSim{3, 96, 32};
-	osSim.printOS();
 
-/*
-
-		Process test_process1 = osSim.NewProcess(4);
-
-
-		Process test_process2 = osSim.NewProcess(1);
-		
-
-		Process test_process3 = osSim.NewProcess(6);
-		
-
-		Process test_process4 = osSim.NewProcess(1);
-		
-
-		Process test_process5 = osSim.NewProcess(8);
-
-
-		Process test_process6 = osSim.NewProcess(3);
-		*/
-
-		osSim.NewProcess(4);
-		osSim.NewProcess(1);
-		osSim.NewProcess(6);
-		osSim.NewProcess(3);
-		osSim.NewProcess(2);
-		osSim.NewProcess(8);
-		osSim.NewProcess(1);
-		osSim.NewProcess(8);
-		osSim.NewProcess(10);
-		osSim.NewProcess(10);
-		osSim.NewProcess(9);
-
-
-
-	
-		osSim.PrintReadyQueue();
-
-		osSim.Exit();
-
-		
-
-
-
-
-
-
-	/*
 	SimulatedOS osSim{3, 96, 32};
 
 	osSim.NewProcess(4);
@@ -70,15 +21,17 @@ int main()
 
 	osSim.PrintReadyQueue();
 	// Ready-Queue: 1 2
+	
 
 	osSim.DiskReadRequested(0, "HW.txt");
 
 	osSim.PrintCPU();
+
 	// CPU: 1
 
-	osSim.PrintDisk(0);
+	//osSim.PrintDisk(0);
 	// Disk 0: PID 3, "HW.txt"
-
+/*
 	osSim.PrintDiskQueue(0);
 	// Disk 0 I/O-queue: Empty
 
@@ -107,8 +60,9 @@ int main()
 	osSim.PrintRAM();
 	// Frame	Page	PID
 	// 0		0		1
+	*/
 
 	return 0;
-	*/
+	
 	
 }

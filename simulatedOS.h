@@ -15,12 +15,12 @@ class SimulatedOS{
     void Exit();
     void DiskReadRequested(int diskNumber, std::string fileName);
     void FetchFrom(unsigned int memoryAddress);
-    void DiskJobCompleted(int diskNumber);
     void PrintCPU()const;
     void PrintReadyQueue()const;
     void PrintRAM()const;
     void PrintDisk(int diskNumber)const;
-    void PrintDiskQueue(int diskQueue)const;
+    void DiskJobCompleted(int diskNumber);
+    //void PrintDiskQueue(int diskQueue)const;
    
      //getters
     int getNumberOfDisks()const;
@@ -29,7 +29,7 @@ class SimulatedOS{
     int getPIDcounter()const;
     int getCurrentPage()const;
     int getCurrentDisk()const;
-    std::string getFileName()const;
+    
     std::deque<Process*> getQueue()const;
    
     //setters
@@ -38,13 +38,12 @@ class SimulatedOS{
     void setPageSize(int m_pageSize);
     void setCurrentPage(int m_page);
     void setCurrentDisk(int m_disk);
-    void setFileName(std::string m_FileName);
+    
     //helper functions
     void incrementPID();
     void printOS()const;
     bool addProcess(Process *new_process);
     void printQueue()const;
-    
 
 
     private:
@@ -59,8 +58,8 @@ class SimulatedOS{
 
     std::vector<int> RAM_;
     std::vector<Process*> readyQueue_;
-    std::vector<Process*> diskQueue_;
-    std::string FileName_;
+    std::queue<Process*> diskQueue_;
+    
    
 };
 

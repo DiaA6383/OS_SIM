@@ -33,9 +33,10 @@ void SimulatedOS::Exit(){
 }
 
 void SimulatedOS::DiskReadRequested(int diskNumber, std::string fileName){
-    if(diskNumber > 0 && diskNumber <= this->getNumberOfDisks()){
-        setFileName(fileName);
-        diskQueue_.push_back(queue_.front());
+    if(diskNumber >= 0 && diskNumber <= this->getNumberOfDisks()){
+        queue_.front()->setFileName(fileName);
+        queue_.front()->setDiskNumber(diskNumber);
+        diskQueue_.push(queue_.front());
         queue_.pop_front();
     }
 }
@@ -43,6 +44,7 @@ void SimulatedOS::DiskReadRequested(int diskNumber, std::string fileName){
 void SimulatedOS::FetchFrom(unsigned int memoryAddress){
     while(memoryAddress < (unsigned int) getAmountOfRAM()){
         queue_.front()->setPC(memoryAddress);
+        RAM_.push_back(queue_.front()->getPID());
     }
 }
 
@@ -52,8 +54,9 @@ void SimulatedOS::PrintCPU()const{
 
 void SimulatedOS::PrintReadyQueue()const{
     std::cout << "Ready Queue: ";
-    for(long unsigned int i = 0; i < readyQueue_.size(); i++){
-        std::cout << readyQueue_[i]->getPID() << " "; 
+    for(long unsigned int i = 1; i < readyQueue_.size(); i++){
+        //std::cout << readyQueue_[i]->getPID() << " "; 
+        std::cout << queue_[i]->getPID() << " ";
     }
     std::cout << std::endl;
 }
@@ -61,7 +64,19 @@ void SimulatedOS::PrintReadyQueue()const{
 void SimulatedOS::PrintRAM()const{
     std::cout << "Frame     Page     PID " << std::endl;
     for(int i = queue_.size(); i > 0; i++){
+        
     std::cout << i << "/T" << "";
+    }
+}
+void SimulatedOS::DiskJobCompleted(int diskNumber){
+    if(diskNumber < 0 || diskNumber > this->getNumberOfDisks()){
+        throw std::invalid_argument("Disk Number does not exist.");
+    }else{
+        //bool isCompleted = true;
+        //diskQueue_.front()-> setFileName("");
+        //diskQueue_.front()-> setDiskNumber(0);
+        queue_.push_front(diskQueue_.front());
+        diskQueue_.pop();
     }
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,9 +100,7 @@ std::deque<Process*> SimulatedOS::getQueue()const{
     return queue_;
 }
 
-void SimulatedOS::setFileName(std::string m_FileName){
-    FileName_ = m_FileName;
-}
+
 void SimulatedOS::setNumberOfDisks(int m_numberOfDisks){
     numberOfDisks_ = m_numberOfDisks;
 }
