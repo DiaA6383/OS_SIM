@@ -1,0 +1,8 @@
+{
+	"editor.defaultFormatter": "xaver.clang-format",
+	"C_Cpp.formatting": "clangFormat",
+	"eslint.codeActionsOnSave.rules": null,
+	"[cpp]": {
+		"editor.defaultFormatter": "xaver.clang-format"
+	}
+}
