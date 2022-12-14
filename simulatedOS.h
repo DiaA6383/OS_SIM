@@ -3,12 +3,13 @@
 
 #include <iostream>
 #include "Process.h"
+#include "Memory.h"
 #include <queue>
 #include <stack>
 
 class SimulatedOS{
     public:
-   
+    struct RAM_Mem;
     //main methods
     SimulatedOS(int m_numberOfDisks, int m_amountOfRAM, int m_pageSize);
     Process NewProcess(int m_priority);
@@ -30,6 +31,7 @@ class SimulatedOS{
     int getPIDcounter()const;
     int getCurrentPage()const;
     int getCurrentDisk()const;
+    std::vector<Memory*>getRAM()const;
     
     std::deque<Process*> getQueue()const;
    
@@ -46,6 +48,9 @@ class SimulatedOS{
     bool addProcess(Process *new_process);
     void printQueue()const;
     bool queue_isEmpty(int diskNumber)const;
+    int findOldestInRAM()const;
+    void addToTable(int pid, int priority);
+    
 
 
     private:
@@ -58,9 +63,10 @@ class SimulatedOS{
     std::deque<Process*> queue_;
     std::stack<Process*> temp_stack_;
 
-    std::vector<int> RAM_;
-    std::deque<Process*> diskQueue_;
+    std::vector<Memory*> RAM_;
     std::vector<std::deque<Process*>> diskQueue_vector_;
+
+    
     
    
 };

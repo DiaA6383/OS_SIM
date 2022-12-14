@@ -6,8 +6,15 @@ Process::Process(int m_priority, int m_PID){
     setPID(m_PID);
     setPage(0);
     setDiskNumber(-1);
-    
 }
+/*
+RAM_Mem::Process(int MEMpageNum_m, int MEMpid_m, int MEMpriority_m){
+    MEMpageNum_=MEMpageNum_m;
+    MEMpid_=MEMpid_m;
+    MEMuse_=0;
+    MEMpriority_=MEMpriority_m;
+}
+*/
 /**
  * @brief Destroy the Process:: Process object
  * set all Process attributes to null and delete object since we used NEW keyword

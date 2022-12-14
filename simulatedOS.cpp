@@ -1,16 +1,15 @@
 #include <iostream>
 #include "simulatedOS.h"
+#include "vector"
 #include "Process.h"
 
 
 SimulatedOS::SimulatedOS(int m_numberOfDisks, int m_amountOfRAM, int m_pageSize){
-    setNumberOfDisks(m_numberOfDisks);
-    setPageSize(m_pageSize);
-    setCurrentPage(0);
-    setCurrentDisk(0);
-    if(m_amountOfRAM % m_pageSize !=0){
+     if(m_amountOfRAM % m_pageSize !=0){
         throw std::invalid_argument("amountOfRAM MUST be divisible to pageSize");
     }
+    setNumberOfDisks(m_numberOfDisks);
+    setPageSize(m_pageSize);
     setAmountOfRAM(m_amountOfRAM);
     PID_Counter_ = 0; //initialize PID after each OS instance
     for(int i = 0; i < m_numberOfDisks; i++){
@@ -23,8 +22,8 @@ Process SimulatedOS::NewProcess(int m_priority){
     incrementPID();
     int new_pid = this->PID_Counter_;
     Process *new_process = new Process(m_priority, new_pid);
-    RAM_.push_back(0);
     addProcess(new_process);
+    addToTable(new_pid, m_priority);
     return *new_process;
 }
 
@@ -37,13 +36,10 @@ void SimulatedOS::Exit(){
     }
 }
 
-
-
 void SimulatedOS::FetchFrom(unsigned int memoryAddress){
-    while(memoryAddress < (unsigned int) getAmountOfRAM()){
-        queue_.front()->setPC(memoryAddress);
-        RAM_.push_back(queue_.front()->getPID());
-    }
+   
+    queue_.front()->setPC(memoryAddress);
+    
 }
 
 void SimulatedOS::PrintCPU()const{
@@ -53,7 +49,6 @@ void SimulatedOS::PrintCPU()const{
 void SimulatedOS::PrintReadyQueue()const{
     std::cout << "Ready Queue: ";
     for(long unsigned int i = 1; i < queue_.size(); i++){
-        //std::cout << readyQueue_[i]->getPID() << " "; 
         std::cout << queue_[i]->getPID() << " ";
     }
     std::cout << std::endl;
@@ -61,16 +56,14 @@ void SimulatedOS::PrintReadyQueue()const{
 
 void SimulatedOS::PrintRAM()const{
     std::cout << "Frame     Page     PID " << std::endl;
-    for(int i = queue_.size(); i > 0; i++){
-        
-    std::cout << i << "/T" << "";
+    for(long unsigned int i = 0; i < RAM_.size(); i++){    
+    //std::cout << i << " " << RAM_[i]->getPageNum() << " " << RAM_[i]->getMemPID() << std::endl;
     }
 }
 void SimulatedOS::DiskReadRequested(int diskNumber, std::string fileName){
     if(diskNumber >= 0 && diskNumber <= this->getNumberOfDisks()){
         queue_.front()->setDiskNumber(diskNumber);
         queue_.front()->setFileName(fileName);
-        //diskQueue_.push_back(queue_.front());
         diskQueue_vector_[diskNumber].push_back(queue_.front());//! doesnt exist 
         queue_.pop_front();
     }
@@ -118,64 +111,13 @@ void SimulatedOS::PrintDiskQueue(int diskNumber)const{
         }
     }
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-//setters and getters for encapsulation purposes
-int SimulatedOS::getNumberOfDisks()const{
-    return numberOfDisks_;
-}
-int SimulatedOS::getAmountOfRAM()const{
-    return amountOfRAM_;
-}
-int SimulatedOS::getPageSize()const{
-    return pageSize_;
-}
-int SimulatedOS::getCurrentPage()const{
-    return curr_page_;
-}
-int SimulatedOS::getCurrentDisk()const{
-    return curr_disk_;
-}
-std::deque<Process*> SimulatedOS::getQueue()const{
-    return queue_;
-}
-
-
-void SimulatedOS::setNumberOfDisks(int m_numberOfDisks){
-    numberOfDisks_ = m_numberOfDisks;
-}
-void SimulatedOS::setAmountOfRAM(int m_amountOfRAM){
-    amountOfRAM_ = m_amountOfRAM;
-}
-void SimulatedOS::setPageSize(int m_pageSize){
-    pageSize_ = m_pageSize;
-}
-void SimulatedOS::setCurrentPage(int m_page){
-    curr_page_ = m_page;
-}
-void SimulatedOS::setCurrentDisk(int m_disk){
-    curr_disk_ = m_disk;
-}
 
 //Helpers
 void SimulatedOS::incrementPID(){
    PID_Counter_++;
 }
 
-void SimulatedOS::printOS()const{
-    std::cout << "~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
-    std::cout << "Your OS:" << std::endl;
-    std::cout << std::endl;
-    std::cout << "Number of Disks: " << getNumberOfDisks() << std::endl;
-    std::cout << "Amount of RAM: " << getAmountOfRAM() << std::endl;
-    std::cout << "Size of Page: " << getPageSize() << std::endl;
-    std::cout << std::endl;
-    std::cout << "Current Page: " << getCurrentPage() << std::endl;
-    std::cout << "Current Disk: " << getCurrentDisk() <<std::endl;
-    std::cout << "~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
-}
-
 bool SimulatedOS::addProcess(Process *new_process){ //if higher go 
-    
     //1. if queue is empty
     if(queue_.size() == 0){
         queue_.push_front(new_process);
@@ -206,17 +148,16 @@ bool SimulatedOS::addProcess(Process *new_process){ //if higher go
     return true;
 }
 
+
 void SimulatedOS::printQueue()const{
     std::cout << std::endl;
-    
-
     for(long unsigned int i =0; i < getQueue().size(); i++){
     getQueue()[i]->printProcess();
     std::cout << std::endl;
     }
-
     std::cout << std::endl;
 }
+
 bool SimulatedOS::queue_isEmpty(int diskNumber)const{
     for(long unsigned int i = 0; i < this->diskQueue_vector_[diskNumber].size(); i++){
         if(this->diskQueue_vector_[diskNumber][i]->completeStatus() == false){
@@ -225,6 +166,70 @@ bool SimulatedOS::queue_isEmpty(int diskNumber)const{
         }
     }
     return true;
+}
+int SimulatedOS::findOldestInRAM()const{
+    int oldest=0;
+    int index=0;
+    
+    for(long unsigned int i = 0; i < RAM_.size();i++){
+        if(RAM_[i]->getMemUse() > oldest){
+            oldest = RAM_[i]->getMemUse();
+            index = (int)i;
+        }
+        
+    }
+    return index;
+}
+void SimulatedOS::addToTable(int pid, int priority){
+    Memory *new_memory = new Memory(0, pid, priority);
+    
+    if((int)RAM_.size() <= (getAmountOfRAM()/getPageSize())){
+        new_memory->incrementUse();;
+        RAM_.push_back(new_memory);
+            
+    }else{
+        new_memory->incrementUse();
+        RAM_[findOldestInRAM()] = new_memory;
+        
+    }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//setters and getters for encapsulation purposes
+int SimulatedOS::getNumberOfDisks()const{
+    return numberOfDisks_;
+}
+int SimulatedOS::getAmountOfRAM()const{
+    return amountOfRAM_;
+}
+int SimulatedOS::getPageSize()const{
+    return pageSize_;
+}
+int SimulatedOS::getCurrentPage()const{
+    return curr_page_;
+}
+int SimulatedOS::getCurrentDisk()const{
+    return curr_disk_;
+}
+std::deque<Process*> SimulatedOS::getQueue()const{
+    return queue_;
+}
+std::vector<Memory*>SimulatedOS::getRAM()const{
+    return RAM_;
+}
+void SimulatedOS::setNumberOfDisks(int m_numberOfDisks){
+    numberOfDisks_ = m_numberOfDisks;
+}
+void SimulatedOS::setAmountOfRAM(int m_amountOfRAM){
+    amountOfRAM_ = m_amountOfRAM;
+}
+void SimulatedOS::setPageSize(int m_pageSize){
+    pageSize_ = m_pageSize;
+}
+void SimulatedOS::setCurrentPage(int m_page){
+    curr_page_ = m_page;
+}
+void SimulatedOS::setCurrentDisk(int m_disk){
+    curr_disk_ = m_disk;
 }
 
 

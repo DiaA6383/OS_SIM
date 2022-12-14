@@ -1,12 +1,23 @@
 #ifndef PROCESS_
 #define PROCESS_
 #include <iostream>
+#include "Memory.h"
 
 class Process{
     public:
     //constructor 
     Process(int m_priority, int m_PID);
     //~Process();
+    /*
+    struct RAM_Mem{
+    RAM_Mem(int MEMpageNum_m, int MEMpid_m, int MEMpriority_m);
+    int MEMpageNum_;
+    int MEMpid_;
+    int MEMuse_;
+    int MEMpriority_;
+    };
+    */
+   
 
     //getters and setters
     void setPC(int m_PC);
@@ -27,6 +38,7 @@ class Process{
     int getDiskNumber()const;
     void printProcess()const;
     void incrementProcess();
+   
  
 
 
