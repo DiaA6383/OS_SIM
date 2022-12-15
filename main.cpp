@@ -10,6 +10,8 @@
 
 int main()
 {
+	/*
+	
 
 	SimulatedOS osSim{3, 96, 32};
 
@@ -61,37 +63,43 @@ int main()
 	// Frame	Page	PID
 	// 0		0		1
 	
-/*
 
+std::cout << "TEST 2 ********************************************************" << std::endl;
+*/
 	SimulatedOS osSim2{ 1, 300, 100 };
 
 	osSim2.NewProcess(10);//pid 1
+		osSim2.PrintRAM();
+	// Frame	Page	PID
+	// 0		0		1++
+	// 1		
+	// 2		
 	osSim2.NewProcess(5);//pid 2
 
 	osSim2.PrintRAM();
 	// Frame	Page	PID
-	// 0		0		1
+	// 0		0		1++
 	// 1		0		2
 	// 2		
 
 	osSim2.FetchFrom(120); //120/100 = 1 
 	osSim2.PrintRAM(); //cpu-> pid1 pg1
 	// Frame	Page	PID
-	// 0		0		1
+	// 0		0		1++
 	// 1		0		2
-	// 2		1		1
+	// 2		1		1++
 
 	osSim2.DiskReadRequested(0, "job.docx");//cpu->pid1 pg 1to disk queue
 	osSim2.PrintRAM();//cpu-> pid2 pg0
 	// Frame	Page	PID
-	// 0		0		1
+	// 0		0		1++
 	// 1		0		2
-	// 2		1		1
+	// 2		1		1++
 
 	osSim2.FetchFrom(777); //700/100 = 7
 	osSim2.PrintRAM();//cpu->pid2 pg7
 	// Frame	Page	PID
-	// 0		7		2
+	// 0		7		2++
 	// 1		0		2
 	// 2		1		1
 
@@ -100,7 +108,7 @@ int main()
 	// Frame	Page	PID
 	// 0		7		2
 	// 1		0		2
-	// 2		0		3
+	// 2		0		3++
 
 	osSim2.DiskJobCompleted(0);
 	// The following happens after this command:
@@ -151,7 +159,6 @@ int main()
 	// 1		1		4
 	// 2		0		4
 
-	*/
 	return 0;
 	
 	

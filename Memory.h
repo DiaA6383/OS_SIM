@@ -14,7 +14,9 @@ class Memory{
     void setMemPageNum(int m_pageNum);
     void setMemPriority(int m_priority);
     void setMemPID(int m_pid_f);
+    void setMemUse();
     void incrementUse();
+    void makeFreshlyUsed();
 
     
 

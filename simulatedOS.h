@@ -14,14 +14,16 @@ class SimulatedOS{
     SimulatedOS(int m_numberOfDisks, int m_amountOfRAM, int m_pageSize);
     Process NewProcess(int m_priority);
     void Exit();
-    void DiskReadRequested(int diskNumber, std::string fileName);
-    void FetchFrom(unsigned int memoryAddress);
+    
     void PrintCPU()const;
     void PrintReadyQueue()const;
-    void PrintRAM()const;
+    void PrintRAM();
     void PrintDisk(int diskNumber)const;
-    void DiskJobCompleted(int diskNumber);
     void PrintDiskQueue(int diskNumber)const;
+
+    void FetchFrom(unsigned int memoryAddress);
+    void DiskReadRequested(int diskNumber, std::string fileName);
+    void DiskJobCompleted(int diskNumber);
     //void PrintDiskQueue(int diskQueue)const;
    
      //getters
@@ -48,8 +50,12 @@ class SimulatedOS{
     bool addProcess(Process *new_process);
     void printQueue()const;
     bool queue_isEmpty(int diskNumber)const;
-    int findOldestInRAM()const;
-    void addToTable(int pid, int priority);
+    int findOldestInRAM();
+    bool isUnique(Memory* mem);
+    void addToTable(Process* process);
+    int findCPUuser();
+    bool isUsingCPU(int index);
+    void makeRamOlder();
     
 
 
@@ -65,6 +71,7 @@ class SimulatedOS{
 
     std::vector<Memory*> RAM_;
     std::vector<std::deque<Process*>> diskQueue_vector_;
+    std::vector<std::deque<Memory*>> frame_vector_;
 
     
     
