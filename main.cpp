@@ -49,7 +49,8 @@ int main()
 
 	osSim.PrintDisk(0);
 	// Disk 0: Idle
-
+	osSim.PrintRAM();
+	std::cout << "testing here" << std::endl;
 	osSim.FetchFrom(48);
 	osSim.PrintRAM();
 	// Frame	Page	PID
