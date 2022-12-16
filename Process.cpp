@@ -1,3 +1,7 @@
+//Name: Alejandro Diaz
+//Course: Operating Systems CSCI 340
+//Professor: Shostak 
+//Project: OS Simulator
 #include <iostream>
 #include "process.h"
 Process::Process(int m_priority, int m_PID){
@@ -7,19 +11,6 @@ Process::Process(int m_priority, int m_PID){
     setPage(0);
     setDiskNumber(-1);
 }
-/*
-RAM_Mem::Process(int MEMpageNum_m, int MEMpid_m, int MEMpriority_m){
-    MEMpageNum_=MEMpageNum_m;
-    MEMpid_=MEMpid_m;
-    MEMuse_=0;
-    MEMpriority_=MEMpriority_m;
-}
-*/
-/**
- * @brief Destroy the Process:: Process object
- * set all Process attributes to null and delete object since we used NEW keyword
- */
-//Process::~Process();
 
 void Process::setPC(int m_PC){
     this->PC_ = m_PC;

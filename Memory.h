@@ -1,3 +1,7 @@
+//Name: Alejandro Diaz
+//Course: Operating Systems CSCI 340
+//Professor: Shostak 
+//Project: OS Simulator
 #ifndef MEMORY_
 #define MEMORY_
 #include <iostream>
@@ -16,12 +20,14 @@ class Memory{
     void setMemUse();
     void incrementUse();
     void makeFreshlyUsed();
+    void setMemCompleteStatus();
 
     private:
     int pageNum_;
     int pid_f;
     int use_;
     int priority_f;
+    bool isCompleted = false;
 };
 
 #endif

@@ -1,6 +1,10 @@
+//Name: Alejandro Diaz
+//Course: Operating Systems CSCI 340
+//Professor: Shostak 
+//Project: OS Simulator
 #include <iostream>
-#include "simulatedOS.h"
 #include "vector"
+#include "simulatedOS.h"
 #include "Process.h"
 
 SimulatedOS::SimulatedOS(int m_numberOfDisks, int m_amountOfRAM, int m_pageSize){
@@ -134,23 +138,11 @@ void SimulatedOS::DiskReadRequested(int diskNumber, std::string fileName){
 
         queue_.front()->setDiskNumber(diskNumber);
         queue_.front()->setFileName(fileName);
-        diskQueue_vector_[diskNumber].push_front(queue_.front());//! doesnt exist 
+        diskQueue_vector_[diskNumber].push_front(queue_.front());
         queue_.pop_front();
         }
-        //for all in ram if pid == curr using cpu && newest 
         
         RAM_[findCPUuser()]->makeFreshlyUsed();
-
-        //addToTable(queue_.front());
-        /*
-        
-        for(long unsigned int i = 0; i < RAM_.size();i++){
-            if(queue_.front()->getPID()== RAM_[i]->getMemPID()&&findCPUuser(queue_.front())->getMemPageNum() !=RAM_[i]->getMemPageNum()){
-                addToTable(queue_.front()->getPage(), RAM_[i]->getMemPID(), queue_.front()->getPriority());
-            }
-        }
-        */
-        
         
     }
 
@@ -164,6 +156,8 @@ void SimulatedOS::DiskJobCompleted(int diskNumber){
             if(diskQueue_vector_[diskNumber][i]->completeStatus() != true){
                 diskQueue_vector_[diskNumber][i]->setCompleteStatus();
                 addProcess(diskQueue_vector_[diskNumber][i]);
+                frame_vector_[diskNumber][i]->setMemCompleteStatus();
+                RAM_[findOldestInRAM()] = frame_vector_[diskNumber][i];
                // addToTable(frame_vector_[diskNumber][i]);
                
                 break;

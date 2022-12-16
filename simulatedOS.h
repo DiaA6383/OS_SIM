@@ -1,3 +1,7 @@
+//Name: Alejandro Diaz
+//Course: Operating Systems CSCI 340
+//Professor: Shostak 
+//Project: OS Simulator
 #ifndef SIMULATED_OS_ 
 #define SIMULATED_OS_
 

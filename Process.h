@@ -1,3 +1,7 @@
+//Name: Alejandro Diaz
+//Course: Operating Systems CSCI 340
+//Professor: Shostak 
+//Project: OS Simulator
 #ifndef PROCESS_
 #define PROCESS_
 #include <iostream>
@@ -29,9 +33,6 @@ class Process{
     void printProcess()const;
     void incrementProcess();
    
- 
-
-
     private:
     int PC_;
     int PID_;

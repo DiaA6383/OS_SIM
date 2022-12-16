@@ -1,3 +1,7 @@
+//Name: Alejandro Diaz
+//Course: Operating Systems CSCI 340
+//Professor: Shostak 
+//Project: OS Simulator
 #include "Memory.h"
 #include <iostream>
 
@@ -34,5 +38,9 @@ void Memory::makeFreshlyUsed(){
 void Memory::incrementUse(){
     use_++;
 }
+void Memory::setMemCompleteStatus(){
+    this->isCompleted = true;
+}
+
 
 
