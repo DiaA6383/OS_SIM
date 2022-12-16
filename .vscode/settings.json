@@ -4,5 +4,8 @@
 	"eslint.codeActionsOnSave.rules": null,
 	"[cpp]": {
 		"editor.defaultFormatter": "xaver.clang-format"
-	}
+	},
+	"cSpell.words": [
+		"Freshlyused"
+	]
 }

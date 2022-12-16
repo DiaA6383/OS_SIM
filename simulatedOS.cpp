@@ -3,45 +3,6 @@
 #include "vector"
 #include "Process.h"
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-//setters and getters for encapsulation purposes
-int SimulatedOS::getNumberOfDisks()const{
-    return numberOfDisks_;
-}
-int SimulatedOS::getAmountOfRAM()const{
-    return amountOfRAM_;
-}
-int SimulatedOS::getPageSize()const{
-    return pageSize_;
-}
-int SimulatedOS::getCurrentPage()const{
-    return curr_page_;
-}
-int SimulatedOS::getCurrentDisk()const{
-    return curr_disk_;
-}
-std::deque<Process*> SimulatedOS::getQueue()const{
-    return queue_;
-}
-std::vector<Memory*>SimulatedOS::getRAM()const{
-    return RAM_;
-}
-void SimulatedOS::setNumberOfDisks(int m_numberOfDisks){
-    numberOfDisks_ = m_numberOfDisks;
-}
-void SimulatedOS::setAmountOfRAM(int m_amountOfRAM){
-    amountOfRAM_ = m_amountOfRAM;
-}
-void SimulatedOS::setPageSize(int m_pageSize){
-    pageSize_ = m_pageSize;
-}
-void SimulatedOS::setCurrentPage(int m_page){
-    curr_page_ = m_page;
-}
-void SimulatedOS::setCurrentDisk(int m_disk){
-    curr_disk_ = m_disk;
-}
-
 SimulatedOS::SimulatedOS(int m_numberOfDisks, int m_amountOfRAM, int m_pageSize){
      if(m_amountOfRAM % m_pageSize !=0){
         throw std::invalid_argument("amountOfRAM MUST be divisible to pageSize");
@@ -96,6 +57,7 @@ void SimulatedOS::Exit(){
 
 void SimulatedOS::PrintCPU()const{
     std::cout << "CPU: " << queue_.front()->getPID() <<std::endl;
+    std::cout << std::endl;
 }
 
 void SimulatedOS::PrintReadyQueue()const{
@@ -104,14 +66,13 @@ void SimulatedOS::PrintReadyQueue()const{
         std::cout << queue_[i]->getPID() << " ";
     }
     std::cout << std::endl;
+    std::cout << std::endl;
 }
 
 void SimulatedOS::PrintRAM(){
-    std::cout << "Frame" << '\t' << "Page" << '\t' << "PID" << '\t'<< "use"<< '\t' << "CPU" << std::endl;
+    std::cout << "Frame" << '\t' << "Page" << '\t' << "PID" <<std::endl;
     for(long unsigned int i = 0; i < RAM_.size(); i++){    
-     
-            std::cout << i << '\t' << RAM_[i]->getMemPageNum() << '\t' << RAM_[i]->getMemPID() << '\t' << RAM_[i]->getMemUse() << '\t' <<  isUsingCPU(i) << std::endl;
-        
+            std::cout << i << '\t' << RAM_[i]->getMemPageNum() << '\t' << RAM_[i]->getMemPID() << std::endl;     
     }
     std::cout << std::endl;
 }
@@ -120,10 +81,11 @@ void SimulatedOS::PrintDisk(int diskNumber)const{
     for(long unsigned int i = 0; i < diskQueue_vector_[diskNumber].size(); i++){
         if(diskQueue_vector_[diskNumber][i]->completeStatus() == false){
             std::cout << "Disk: " << diskNumber << " PID: " << diskQueue_vector_[diskNumber][i]->getPID() << " " << diskQueue_vector_[diskNumber][i]->getFileName()<<std::endl;
+            std::cout << std::endl;
             break;
         }else{
-            //throw std::invalid_argument("Disk number does not exist.");
             std::cout << "Disk " << diskNumber << " Idle" <<std::endl;
+            std::cout << std::endl;
         }
     }
 }
@@ -131,9 +93,11 @@ void SimulatedOS::PrintDisk(int diskNumber)const{
 void SimulatedOS::PrintDiskQueue(int diskNumber)const{
     if(diskNumber < 0 || diskNumber > this->getNumberOfDisks()){
         std::cout << "Instruction Ignored: no disk with such number exists" << std::endl;
+        std::cout << std::endl;
     }
     else if(this->diskQueue_vector_[diskNumber].size() == 0||queue_isEmpty(diskNumber)==true){
         std::cout << "Disk " << diskNumber << " I/O queue: Empty" <<std::endl;
+        std::cout << std::endl;
 
     }else{
         for(unsigned long int i = 0; i < this->diskQueue_vector_[diskNumber].size(); i++){
@@ -142,6 +106,73 @@ void SimulatedOS::PrintDiskQueue(int diskNumber)const{
             }
         }
     }
+}
+void SimulatedOS::FetchFrom(unsigned int memoryAddress){
+    makeRamOlder();
+    //bool alreadyExists = false;
+    queue_.front()->setPC(memoryAddress);
+    queue_.front()->setPage(memoryAddress/this->getPageSize());
+    addToTable(queue_.front());
+    /*
+    for(long unsigned int i = 0; i < RAM_.size(); i++){
+        if(RAM_[i]->getMemPID() == queue_.front()->getPID() && RAM_[i]->getMemPageNum() == queue_.front()->getPage()){
+            alreadyExists =true;
+            //makeRamOlder();
+            RAM_[i]->makeFreshlyUsed();
+        }
+    }
+    if(alreadyExists == false){
+        
+    }
+    */
+    //if statement if already in RAM, dont push anything and just increment everyhting by one (make ram older)
+    //if same pid with same page already exists-- just increment and make the mem thing new 
+}
+void SimulatedOS::DiskReadRequested(int diskNumber, std::string fileName){
+    makeRamOlder();
+    if(diskNumber >= 0 && diskNumber <= this->getNumberOfDisks()){
+        frame_vector_[diskNumber].push_back(RAM_[findCPUuser()]);
+
+        queue_.front()->setDiskNumber(diskNumber);
+        queue_.front()->setFileName(fileName);
+        diskQueue_vector_[diskNumber].push_front(queue_.front());//! doesnt exist 
+        queue_.pop_front();
+        }
+        //for all in ram if pid == curr using cpu && newest 
+        
+        //findCPUuser()->makeFreshlyUsed();
+
+        //addToTable(queue_.front());
+        /*
+        
+        for(long unsigned int i = 0; i < RAM_.size();i++){
+            if(queue_.front()->getPID()== RAM_[i]->getMemPID()&&findCPUuser(queue_.front())->getMemPageNum() !=RAM_[i]->getMemPageNum()){
+                addToTable(queue_.front()->getPage(), RAM_[i]->getMemPID(), queue_.front()->getPriority());
+            }
+        }
+        */
+        
+        
+    }
+
+void SimulatedOS::DiskJobCompleted(int diskNumber){
+   
+    if(diskNumber < 0 || diskNumber > this->getNumberOfDisks()-1){
+        //throw std::invalid_argument("Disk Number does not exist.");
+        std::cout << "Disk Number does not exist." <<std::endl;
+    }else{
+        for(long unsigned int i = 0; i < diskQueue_vector_[diskNumber].size(); i++){
+            if(diskQueue_vector_[diskNumber][i]->completeStatus() != true){
+                diskQueue_vector_[diskNumber][i]->setCompleteStatus();
+                addProcess(diskQueue_vector_[diskNumber][i]);
+                if(queue_.front()->getPID() == diskQueue_vector_[diskNumber][i]->getPID()){ //if disk jon completed is using the CPU, then you need to load it into memory if its not already there 
+
+                }
+                break;
+            }
+        }
+    }
+
 }
 
 //Helpers
@@ -191,9 +222,9 @@ void SimulatedOS::addToTable(Process* process){
     }else{
         new_memory->incrementUse();
         RAM_[findOldestInRAM()] = new_memory;
-        
     }
 }
+
 void SimulatedOS::makeRamOlder(){
     for(long unsigned int i = 0; i < RAM_.size();i++){
         RAM_[i]->incrementUse();
@@ -214,7 +245,7 @@ int SimulatedOS::findOldestInRAM(){
     long unsigned int answer;
 
     for(long unsigned int i = 0; i< RAM_.size(); i++){
-        if(queue_.front()->getPID() == RAM_[i]->getMemPID()){//! I changed this from front()
+        if(queue_.front()->getPID() == RAM_[i]->getMemPID()){
             results.push_back(RAM_[i]);
             }
         }
@@ -240,32 +271,32 @@ int SimulatedOS::findOldestInRAM(){
 int SimulatedOS::findCPUuser(){
     std::vector<Memory*> results;
     int newest = 100;
-    int answer;
+    int answer= 0;
+    int usingCPU = 0;
     for(long unsigned int i = 0; i< RAM_.size(); i++){
-        if(queue_.front()->getPID() == RAM_[i]->getMemPID()){//! I changed this from front()
+        if(queue_.front()->getPID() == RAM_[i]->getMemPID()){
             results.push_back(RAM_[i]);
          }
     }
-    if(results.size() == 1){
-        answer = 0;
-    }
-    else{
         for(long unsigned int i = 0; i < results.size(); i++){
         if(results[i]->getMemUse() < newest){
         newest = results[i]->getMemUse();
-        answer = i;
+        answer = i; //this!!!!
              }   
           } 
-        }
-        return answer;
-
+          for(long unsigned int j = 0; j < RAM_.size(); j++){
+            if(results[answer]->getMemPID() == RAM_[j]->getMemPID() && results[answer]->getMemPageNum() == RAM_[j]->getMemPageNum()){
+                usingCPU = j;
+            }
+          }
+        return usingCPU; 
     }
     
         
    
 
 bool SimulatedOS::queue_isEmpty(int diskNumber)const{
-    for(long unsigned int i = 0; i < this->diskQueue_vector_[diskNumber].size(); i++){
+    for(long unsigned int i = 1; i < this->diskQueue_vector_[diskNumber].size(); i++){
         if(this->diskQueue_vector_[diskNumber][i]->completeStatus() == false){
             return false;
             break;
@@ -274,14 +305,11 @@ bool SimulatedOS::queue_isEmpty(int diskNumber)const{
     return true;
 }
 bool SimulatedOS::isUsingCPU(int index){
-
-         if(RAM_[index] == RAM_[findCPUuser()]){
+    if(RAM_[index] == RAM_[findCPUuser()]){
         return true;
-         }else{
-            return false;
-         }
-   
-
+     }else{
+        return false;
+     }
 }
 
 bool SimulatedOS::isUnique(Memory* mem){
@@ -293,60 +321,43 @@ bool SimulatedOS::isUnique(Memory* mem){
     }
     return true;
 }
-//finds memory that is using the CPU
 
 
-void SimulatedOS::FetchFrom(unsigned int memoryAddress){
-    makeRamOlder();
-    queue_.front()->setPC(memoryAddress);
-    queue_.front()->setPage(memoryAddress/this->getPageSize());
-    addToTable(queue_.front());
+
+//setters and getters for encapsulation purposes
+int SimulatedOS::getNumberOfDisks()const{
+    return numberOfDisks_;
 }
-void SimulatedOS::DiskReadRequested(int diskNumber, std::string fileName){
-    makeRamOlder();
-    if(diskNumber >= 0 && diskNumber <= this->getNumberOfDisks()){
-        frame_vector_[diskNumber].push_back(RAM_[findCPUuser()]);
-
-        queue_.front()->setDiskNumber(diskNumber);
-        queue_.front()->setFileName(fileName);
-        diskQueue_vector_[diskNumber].push_back(queue_.front());//! doesnt exist 
-        queue_.pop_front();
-        }
-        //for all in ram if pid == curr using cpu && newest 
-        
-        //findCPUuser()->makeFreshlyUsed();
-
-        //addToTable(queue_.front());
-        /*
-        
-        for(long unsigned int i = 0; i < RAM_.size();i++){
-            if(queue_.front()->getPID()== RAM_[i]->getMemPID()&&findCPUuser(queue_.front())->getMemPageNum() !=RAM_[i]->getMemPageNum()){
-                addToTable(queue_.front()->getPage(), RAM_[i]->getMemPID(), queue_.front()->getPriority());
-            }
-        }
-        */
-        
-        
-    }
-
-void SimulatedOS::DiskJobCompleted(int diskNumber){
-   
-    if(diskNumber < 0 || diskNumber > this->getNumberOfDisks()-1){
-        //throw std::invalid_argument("Disk Number does not exist.");
-        std::cout << "Disk Number does not exist." <<std::endl;
-    }else{
-        for(long unsigned int i = 0; i < diskQueue_vector_[diskNumber].size(); i++){
-            if(diskQueue_vector_[diskNumber][i]->completeStatus() != true){
-                diskQueue_vector_[diskNumber][i]->setCompleteStatus();
-                addProcess(diskQueue_vector_[diskNumber][i]);
-                if(queue_.front()->getPID() == diskQueue_vector_[diskNumber][i]->getPID()){ //if disk jon completed is using the CPU, then you need to load it into memory if its not already there 
-
-                }
-                break;
-            }
-        }
-    }
-
+int SimulatedOS::getAmountOfRAM()const{
+    return amountOfRAM_;
 }
-
-
+int SimulatedOS::getPageSize()const{
+    return pageSize_;
+}
+int SimulatedOS::getCurrentPage()const{
+    return curr_page_;
+}
+int SimulatedOS::getCurrentDisk()const{
+    return curr_disk_;
+}
+std::deque<Process*> SimulatedOS::getQueue()const{
+    return queue_;
+}
+std::vector<Memory*>SimulatedOS::getRAM()const{
+    return RAM_;
+}
+void SimulatedOS::setNumberOfDisks(int m_numberOfDisks){
+    numberOfDisks_ = m_numberOfDisks;
+}
+void SimulatedOS::setAmountOfRAM(int m_amountOfRAM){
+    amountOfRAM_ = m_amountOfRAM;
+}
+void SimulatedOS::setPageSize(int m_pageSize){
+    pageSize_ = m_pageSize;
+}
+void SimulatedOS::setCurrentPage(int m_page){
+    curr_page_ = m_page;
+}
+void SimulatedOS::setCurrentDisk(int m_disk){
+    curr_disk_ = m_disk;
+}

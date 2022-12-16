@@ -10,7 +10,6 @@ class Memory{
     int getMemUse()const;
     int getMemPriority()const;
 
-
     void setMemPageNum(int m_pageNum);
     void setMemPriority(int m_priority);
     void setMemPID(int m_pid_f);
@@ -18,17 +17,11 @@ class Memory{
     void incrementUse();
     void makeFreshlyUsed();
 
-    
-
-
     private:
     int pageNum_;
     int pid_f;
     int use_;
     int priority_f;
-   
-    
-
 };
 
 #endif

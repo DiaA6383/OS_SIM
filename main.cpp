@@ -10,14 +10,17 @@
 
 int main()
 {
-	/*
+	
 	
 
 	SimulatedOS osSim{3, 96, 32};
 
 	osSim.NewProcess(4);
+	osSim.PrintRAM();
 	osSim.NewProcess(2);
+	osSim.PrintRAM();
 	osSim.NewProcess(7);
+	osSim.PrintRAM();
 
 	osSim.PrintCPU();
 	// CPU: 3
@@ -65,7 +68,7 @@ int main()
 	
 
 std::cout << "TEST 2 ********************************************************" << std::endl;
-*/
+
 	SimulatedOS osSim2{ 1, 300, 100 };
 
 	osSim2.NewProcess(10);//pid 1
