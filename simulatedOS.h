@@ -16,7 +16,7 @@ class SimulatedOS{
     void Exit();
     void PrintCPU()const;
     void PrintReadyQueue()const;
-    void PrintRAM();
+    void PrintRAM()const;
     void PrintDisk(int diskNumber)const;
     void PrintDiskQueue(int diskNumber)const;
     void FetchFrom(unsigned int memoryAddress);
@@ -33,8 +33,6 @@ class SimulatedOS{
     int getCurrentDisk()const;
     std::vector<Memory*>getRAM()const;
     std::deque<Process*> getQueue()const;
-   
-    //setters
     void setNumberOfDisks(int m_numberOfDisks);
     void setAmountOfRAM(int m_amountOfRAM);
     void setPageSize(int m_pageSize);
@@ -53,6 +51,7 @@ class SimulatedOS{
     int findCPUuser();
     bool isUsingCPU(int index);
     void makeRamOlder();
+
     private:
     int numberOfDisks_;
     int amountOfRAM_;

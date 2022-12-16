@@ -69,7 +69,7 @@ void SimulatedOS::PrintReadyQueue()const{
     std::cout << std::endl;
 }
 
-void SimulatedOS::PrintRAM(){
+void SimulatedOS::PrintRAM()const{
     std::cout << "Frame" << '\t' << "Page" << '\t' << "PID" <<std::endl;
     for(long unsigned int i = 0; i < RAM_.size(); i++){    
             std::cout << i << '\t' << RAM_[i]->getMemPageNum() << '\t' << RAM_[i]->getMemPID() << std::endl;     
